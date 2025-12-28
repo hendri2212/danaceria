@@ -15,7 +15,7 @@
                     <nav class="d-flex justify-content-end align-items-center gap-2">
                         @auth
                             <a
-                                href="{{ url('/dashboard') }}"
+                                href="{{ url('/') }}"
                                 class="btn btn-outline-dark btn-sm"
                             >
                                 Dashboard
