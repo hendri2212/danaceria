@@ -5,8 +5,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TransactionController;
 use App\Models\Transaction;
+use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', function () {
@@ -32,6 +34,60 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
+    Route::get('/teller', function () {
+        if (!in_array(auth()->user()?->role, ['admin', 'teller'], true)) {
+            abort(403);
+        }
+
+        $selectedUserId = request()->query('user_id');
+        $transactions = Transaction::with('user')
+            ->when($selectedUserId, function ($query) use ($selectedUserId) {
+                $query->where('user_id', $selectedUserId);
+            })
+            ->orderByDesc('transacted_at')
+            ->orderByDesc('created_at')
+            ->take(50)
+            ->get();
+
+        $users = User::orderBy('name')
+            ->get(['id', 'name', 'email']);
+
+        $customers = User::where('role', 'customer')
+            ->orderBy('name')
+            ->get(['id', 'name', 'email']);
+
+        return view('teller', [
+            'transactions' => $transactions,
+            'users' => $users,
+            'customers' => $customers,
+            'selectedUserId' => $selectedUserId,
+        ]);
+    })->name('teller');
+
+    Route::get('/customer', function () {
+        if (!in_array(auth()->user()?->role, ['admin', 'teller'], true)) {
+            abort(403);
+        }
+
+        $customers = User::query()
+            ->where('role', 'customer')
+            ->leftJoin('transactions', 'users.id', '=', 'transactions.user_id')
+            ->select(
+                'users.id',
+                'users.name',
+                'users.email',
+                DB::raw("SUM(CASE WHEN transactions.type = 'in' THEN transactions.amount ELSE 0 END) as total_in"),
+                DB::raw("SUM(CASE WHEN transactions.type = 'out' THEN transactions.amount ELSE 0 END) as total_out")
+            )
+            ->groupBy('users.id', 'users.name', 'users.email')
+            ->orderBy('users.name')
+            ->get();
+
+        return view('customer', [
+            'customers' => $customers,
+        ]);
+    })->name('customer');
+
     Route::get('/', function () {
         $transactions = Transaction::where('user_id', Auth::id())
             ->orderByDesc('transacted_at')

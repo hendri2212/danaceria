@@ -2,6 +2,15 @@
 
 @section('content')
 <div class="py-3 py-md-4">
+    @if (in_array(auth()->user()?->role, ['admin', 'teller'], true))
+        <div class="mb-3">
+            <div class="d-flex flex-wrap gap-2 align-items-center p-3 rounded-4 bg-light border shadow-sm">
+                <span class="text-uppercase small fw-semibold text-secondary">Menu</span>
+                <a href="{{ url('/teller') }}" class="btn btn-outline-primary btn-sm fw-semibold">Teller</a>
+                <a href="{{ url('/customer') }}" class="btn btn-outline-success btn-sm fw-semibold">Customer</a>
+            </div>
+        </div>
+    @endif
     <div class="row g-3 g-lg-4">
         {{-- Hero --}}
         <div class="col-12">
@@ -72,156 +81,96 @@
             </div>
         </div>
 
-        {{-- Form + history --}}
-        <div class="col-12 col-lg-6 d-flex">
-            <div class="card border-0 shadow-sm rounded-4 w-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-start justify-content-between mb-3">
-                        <div>
-                            <h2 class="h5 fw-bold mb-1">Tambah Tabungan</h2>
-                            <p class="text-secondary mb-0">Catat uang jajanmu agar impian makin dekat ✨</p>
+        <div class="row g-3">
+            <div class="col-12 col-lg-6">
+                <div class="card border-0 shadow-sm rounded-4 w-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start justify-content-between mb-3">
+                            <div>
+                                <h2 class="h5 fw-bold mb-1">Riwayat Tabungan</h2>
+                                <p class="text-secondary mb-0">Pantau setiap kali kamu menabung 💰</p>
+                            </div>
+                            <span class="badge text-bg-info text-dark">
+                                {{ isset($transactions) ? $transactions->count() : 0 }} catatan
+                            </span>
                         </div>
-                        <span class="badge text-bg-success">+ Rp 10.000/hari</span>
+    
+                        <div class="list-group list-group-flush">
+                            @forelse ($transactions ?? [] as $transaction)
+                                <div class="list-group-item rounded-3 border-0 px-0 d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <p class="mb-1 fw-semibold">
+                                            {{ $transaction->type === 'out' ? '-' : '+' }} Rp {{ number_format($transaction->amount, 0, ',', '.') }}
+                                        </p>
+                                        <small class="text-muted d-block">{{ $transaction->title ?? 'Tanpa judul' }}</small>
+                                        @if ($transaction->description)
+                                            <small class="text-muted d-block">{{ $transaction->description }}</small>
+                                        @endif
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="badge {{ $transaction->type === 'out' ? 'text-bg-danger' : 'text-bg-success' }}">
+                                            {{ $transaction->type === 'out' ? 'Keluar' : 'Masuk' }}
+                                        </span>
+                                        <div class="text-muted small mt-1">
+                                            {{ optional($transaction->transacted_at)->format('d M Y H:i') ?? $transaction->created_at->format('d M Y H:i') }}
+                                        </div>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="list-group-item rounded-3 border-0 px-0">
+                                    <div class="d-flex align-items-center gap-2 text-muted">
+                                        <span>Belum ada transaksi. Yuk mulai menabung!</span>
+                                    </div>
+                                </div>
+                            @endforelse
+                        </div>
                     </div>
-
-                    <form method="POST" action="{{ route('transactions.store') }}" class="d-flex flex-column gap-3">
-                        @csrf
-
-                        <div class="row g-3">
-                            <div class="col-12 col-md-6">
-                                <label for="type" class="form-label fw-semibold small">Jenis</label>
-                                <select id="type" name="type" class="form-select form-select-lg rounded-3" required>
-                                    <option value="in" selected>Masuk (Tambah Tabungan)</option>
-                                    <option value="out">Keluar (Tarik Tabungan)</option>
-                                </select>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <label for="amount" class="form-label fw-semibold small">Jumlah (Rp)</label>
-                                <input id="amount" name="amount" type="number" min="0" step="1000" required
-                                    class="form-control form-control-lg rounded-3"
-                                    placeholder="Contoh: 10.000">
-                            </div>
-                        </div>
-
-                        <div>
-                            <label for="title" class="form-label fw-semibold small">Judul singkat</label>
-                            <input id="title" name="title" type="text" maxlength="100"
-                                class="form-control form-control-lg rounded-3"
-                                placeholder="Misal: Nabung jajan, Bonus, atau Tarik mainan">
-                        </div>
-
-                        <div>
-                            <label for="description" class="form-label fw-semibold small">Keterangan</label>
-                            <input id="description" name="description" type="text" maxlength="500"
-                                class="form-control form-control-lg rounded-3"
-                                placeholder="Misal: Nabung dari uang jajan sekolah">
-                        </div>
-
-                        <div>
-                            <label for="transacted_at" class="form-label fw-semibold small">Tanggal & waktu</label>
-                            <input id="transacted_at" name="transacted_at" type="datetime-local"
-                                class="form-control form-control-lg rounded-3">
-                            <div class="form-text">Kosongkan jika ingin pakai waktu sekarang.</div>
-                        </div>
-
-                        <button type="submit" class="btn btn-warning text-dark fw-semibold rounded-3 w-100">
-                            💖 Simpan Tabungan
-                        </button>
-                    </form>
                 </div>
             </div>
-        </div>
-
-        <div class="col-12 col-lg-6 d-flex">
-            <div class="card border-0 shadow-sm rounded-4 w-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-start justify-content-between mb-3">
-                        <div>
-                            <h2 class="h5 fw-bold mb-1">Riwayat Tabungan</h2>
-                            <p class="text-secondary mb-0">Pantau setiap kali kamu menabung 💰</p>
+            <div class="col-12 col-lg-6">
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start justify-content-between mb-3">
+                            <div>
+                                <h2 class="h5 fw-bold mb-1">Grafik Tabungan</h2>
+                                <p class="text-secondary mb-0">Perkembangan 7 hari terakhir</p>
+                            </div>
+                            <span class="badge text-bg-light text-dark">Live data</span>
                         </div>
-                        <span class="badge text-bg-info text-dark">
-                            {{ isset($transactions) ? $transactions->count() : 0 }} catatan
-                        </span>
-                    </div>
-
-                    <div class="list-group list-group-flush">
-                        @forelse ($transactions ?? [] as $transaction)
-                            <div class="list-group-item rounded-3 border-0 px-0 d-flex justify-content-between align-items-start">
-                                <div>
-                                    <p class="mb-1 fw-semibold">
-                                        {{ $transaction->type === 'out' ? '-' : '+' }} Rp {{ number_format($transaction->amount, 0, ',', '.') }}
-                                    </p>
-                                    <small class="text-muted d-block">{{ $transaction->title ?? 'Tanpa judul' }}</small>
-                                    @if ($transaction->description)
-                                        <small class="text-muted d-block">{{ $transaction->description }}</small>
-                                    @endif
-                                </div>
-                                <div class="text-end">
-                                    <span class="badge {{ $transaction->type === 'out' ? 'text-bg-danger' : 'text-bg-success' }}">
-                                        {{ $transaction->type === 'out' ? 'Keluar' : 'Masuk' }}
+                        @php
+                            $chartData = $chart['daily'] ?? [];
+                            $chartMax = $chart['max'] ?? 1;
+                        @endphp
+    
+                        @forelse ($chartData as $day)
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center small fw-semibold mb-1">
+                                    <span>{{ $day['label'] }}</span>
+                                    <span class="{{ $day['net'] >= 0 ? 'text-success' : 'text-danger' }}">
+                                        {{ $day['net'] >= 0 ? '+' : '-' }}Rp {{ number_format(abs($day['net']), 0, ',', '.') }}
                                     </span>
-                                    <div class="text-muted small mt-1">
-                                        {{ optional($transaction->transacted_at)->format('d M Y H:i') ?? $transaction->created_at->format('d M Y H:i') }}
+                                </div>
+                                <div class="progress bg-info-subtle rounded-pill" style="height: 12px;">
+                                    <div class="progress-bar bg-success" role="progressbar"
+                                        style="width: {{ $chartMax > 0 ? ($day['in'] / $chartMax) * 100 : 0 }}%;"
+                                        aria-valuenow="{{ $day['in'] }}" aria-valuemin="0" aria-valuemax="{{ $chartMax }}">
                                     </div>
+                                    <div class="progress-bar bg-danger" role="progressbar"
+                                        style="width: {{ $chartMax > 0 ? ($day['out'] / $chartMax) * 100 : 0 }}%;"
+                                        aria-valuenow="{{ $day['out'] }}" aria-valuemin="0" aria-valuemax="{{ $chartMax }}">
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between text-muted small mt-1">
+                                    <span>Masuk: Rp {{ number_format($day['in'], 0, ',', '.') }}</span>
+                                    <span>Keluar: Rp {{ number_format($day['out'], 0, ',', '.') }}</span>
                                 </div>
                             </div>
                         @empty
-                            <div class="list-group-item rounded-3 border-0 px-0">
-                                <div class="d-flex align-items-center gap-2 text-muted">
-                                    <span>Belum ada transaksi. Yuk mulai menabung!</span>
-                                </div>
+                            <div class="p-4 border border-2 border-info-subtle rounded-4 text-center text-secondary fw-semibold">
+                                Belum ada data transaksi untuk grafik.
                             </div>
                         @endforelse
                     </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- Chart placeholder --}}
-        <div class="col-12">
-            <div class="card border-0 shadow-sm rounded-4">
-                <div class="card-body">
-                    <div class="d-flex align-items-start justify-content-between mb-3">
-                        <div>
-                            <h2 class="h5 fw-bold mb-1">Grafik Tabungan</h2>
-                            <p class="text-secondary mb-0">Perkembangan 7 hari terakhir</p>
-                        </div>
-                        <span class="badge text-bg-light text-dark">Live data</span>
-                    </div>
-                    @php
-                        $chartData = $chart['daily'] ?? [];
-                        $chartMax = $chart['max'] ?? 1;
-                    @endphp
-
-                    @forelse ($chartData as $day)
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between align-items-center small fw-semibold mb-1">
-                                <span>{{ $day['label'] }}</span>
-                                <span class="{{ $day['net'] >= 0 ? 'text-success' : 'text-danger' }}">
-                                    {{ $day['net'] >= 0 ? '+' : '-' }}Rp {{ number_format(abs($day['net']), 0, ',', '.') }}
-                                </span>
-                            </div>
-                            <div class="progress bg-info-subtle rounded-pill" style="height: 12px;">
-                                <div class="progress-bar bg-success" role="progressbar"
-                                    style="width: {{ $chartMax > 0 ? ($day['in'] / $chartMax) * 100 : 0 }}%;"
-                                    aria-valuenow="{{ $day['in'] }}" aria-valuemin="0" aria-valuemax="{{ $chartMax }}">
-                                </div>
-                                <div class="progress-bar bg-danger" role="progressbar"
-                                    style="width: {{ $chartMax > 0 ? ($day['out'] / $chartMax) * 100 : 0 }}%;"
-                                    aria-valuenow="{{ $day['out'] }}" aria-valuemin="0" aria-valuemax="{{ $chartMax }}">
-                                </div>
-                            </div>
-                            <div class="d-flex justify-content-between text-muted small mt-1">
-                                <span>Masuk: Rp {{ number_format($day['in'], 0, ',', '.') }}</span>
-                                <span>Keluar: Rp {{ number_format($day['out'], 0, ',', '.') }}</span>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="p-4 border border-2 border-info-subtle rounded-4 text-center text-secondary fw-semibold">
-                            Belum ada data transaksi untuk grafik.
-                        </div>
-                    @endforelse
                 </div>
             </div>
         </div>
