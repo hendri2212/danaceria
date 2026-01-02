@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Tabungan Ceria">
+  <rect width="256" height="256" rx="48" fill="#0d6efd"/>
+  <circle cx="92" cy="110" r="22" fill="#ffffff"/>
+  <circle cx="164" cy="110" r="22" fill="#ffffff"/>
+  <path d="M72 166c20 18 44 27 72 27s52-9 72-27" fill="none" stroke="#ffffff" stroke-width="16" stroke-linecap="round"/>
+  <path d="M128 52c-10 0-18 8-18 18v16h36V70c0-10-8-18-18-18z" fill="#ffe08a"/>
+  <rect x="80" y="86" width="96" height="72" rx="28" fill="#ffe08a" opacity="0.9"/>
+</svg>
