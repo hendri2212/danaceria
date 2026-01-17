@@ -110,7 +110,7 @@
                             </div>
                             <div class="col-12 col-md-6">
                                 <label for="transfer_amount" class="form-label fw-semibold small">Jumlah (Rp)</label>
-                                <input id="transfer_amount" name="amount" type="number" min="1" step="1000" required
+                                <input id="transfer_amount" name="amount" type="number" min="0" step="1000" required
                                     class="form-control form-control-lg rounded-3"
                                     placeholder="Contoh: 50.000">
                             </div>
