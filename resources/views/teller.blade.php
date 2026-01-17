@@ -3,7 +3,7 @@
 @section('content')
 <div class="py-3 py-md-4">
     <div class="row g-3 g-lg-4">
-        <div class="col-12 col-lg-6 d-flex">
+        <div class="col-12 col-lg-6 d-flex flex-column gap-3">
             <div class="card border-0 shadow-sm rounded-4 w-100">
                 <div class="card-body">
                     <div class="d-flex align-items-start justify-content-between mb-3">
@@ -67,6 +67,76 @@
 
                         <button type="submit" class="btn btn-warning text-dark fw-semibold rounded-3 w-100">
                             💖 Simpan Tabungan
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 w-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-start justify-content-between mb-3">
+                        <div>
+                            <h2 class="h5 fw-bold mb-1">Transfer Antar Nasabah</h2>
+                            <p class="text-secondary mb-0">Pindahkan saldo dari user A ke user B.</p>
+                        </div>
+                        <span class="badge text-bg-primary">Transfer</span>
+                    </div>
+
+                    <form method="POST" action="{{ route('transactions.transfer') }}" class="d-flex flex-column gap-3">
+                        @csrf
+
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label for="from_user_id" class="form-label fw-semibold small">Dari customer</label>
+                                <select id="from_user_id" name="from_user_id" class="form-select form-select-lg rounded-3" required>
+                                    <option value="" disabled selected>Pilih pengirim</option>
+                                    @foreach ($customers ?? [] as $customer)
+                                        <option value="{{ $customer->id }}" @selected((string) old('from_user_id') === (string) $customer->id)>
+                                            {{ $customer->name }} ({{ $customer->email }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label for="to_user_id" class="form-label fw-semibold small">Ke customer</label>
+                                <select id="to_user_id" name="to_user_id" class="form-select form-select-lg rounded-3" required>
+                                    <option value="" disabled selected>Pilih penerima</option>
+                                    @foreach ($customers ?? [] as $customer)
+                                        <option value="{{ $customer->id }}" @selected((string) old('to_user_id') === (string) $customer->id)>
+                                            {{ $customer->name }} ({{ $customer->email }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label for="transfer_amount" class="form-label fw-semibold small">Jumlah (Rp)</label>
+                                <input id="transfer_amount" name="amount" type="number" min="1" step="1000" required
+                                    class="form-control form-control-lg rounded-3"
+                                    placeholder="Contoh: 50.000">
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label for="transfer_transacted_at" class="form-label fw-semibold small">Tanggal & waktu</label>
+                                <input id="transfer_transacted_at" name="transacted_at" type="datetime-local"
+                                    class="form-control form-control-lg rounded-3">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="transfer_title" class="form-label fw-semibold small">Judul singkat</label>
+                            <input id="transfer_title" name="title" type="text" maxlength="100"
+                                class="form-control form-control-lg rounded-3"
+                                placeholder="Misal: Transfer bulanan atau kirim uang jajan">
+                        </div>
+
+                        <div>
+                            <label for="transfer_description" class="form-label fw-semibold small">Keterangan</label>
+                            <input id="transfer_description" name="description" type="text" maxlength="500"
+                                class="form-control form-control-lg rounded-3"
+                                placeholder="Catatan tambahan (opsional)">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary fw-semibold rounded-3 w-100">
+                            🚀 Proses Transfer
                         </button>
                     </form>
                 </div>

@@ -155,6 +155,7 @@ Route::middleware('auth')->group(function () {
     })->name('home');
 
     Route::post('/transactions', [TransactionController::class, 'store'])->name('transactions.store');
+    Route::post('/transactions/transfer', [TransactionController::class, 'transfer'])->name('transactions.transfer');
 
     Route::post('/logout', function (Request $request) {
         Auth::logout();
