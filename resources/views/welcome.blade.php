@@ -16,24 +16,11 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     </head>
     <body class="bg-light">
-        <div class="d-flex flex-column min-vh-100 py-3 py-lg-4">
-            <header class="container mb-4">
+        <div class="d-flex flex-column min-vh-100 py-3">
+            <header class="container">
                 @if (Route::has('login'))
                     <nav class="d-flex justify-content-end align-items-center gap-2">
-                        @auth
-                            <a
-                                href="{{ url('/') }}"
-                                class="btn btn-outline-dark btn-sm"
-                            >
-                                Dashboard
-                            </a>
-                            <form method="POST" action="{{ route('logout') }}" class="m-0">
-                                @csrf
-                                <button type="submit" class="btn btn-danger btn-sm">
-                                    Logout
-                                </button>
-                            </form>
-                        @else
+                        @guest
                             <a
                                 href="{{ route('login') }}"
                                 class="btn btn-link btn-sm text-decoration-none"
@@ -49,7 +36,7 @@
                                     Register
                                 </a>
                             @endif
-                        @endauth
+                        @endguest
                     </nav>
                 @endif
             </header>

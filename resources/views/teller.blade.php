@@ -1,7 +1,23 @@
 @extends('welcome')
 
 @section('content')
-<div class="py-3 py-md-4">
+    @if (in_array(auth()->user()?->role, ['admin', 'teller'], true))
+        <div class="mb-3">
+            <div class="d-flex justify-content-between gap-2 align-items-center p-3 rounded-4 bg-light border shadow-sm">
+                <div>
+                    <a href="{{ url('/') }}" class="btn btn-outline-dark btn-sm fw-semibold">Dashboard</a>
+                    <a href="{{ url('/teller') }}" class="btn btn-outline-primary btn-sm fw-semibold">Teller</a>
+                    <a href="{{ url('/customer') }}" class="btn btn-outline-success btn-sm fw-semibold">Customer</a>
+                </div>
+                <form method="POST" action="{{ route('logout') }}" class="m-0">
+                    @csrf
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        Logout
+                    </button>
+                </form>
+            </div>
+        </div>
+    @endif
     <div class="row g-3 g-lg-4">
         <div class="col-12 col-lg-6 d-flex flex-column gap-3">
             <div class="card border-0 shadow-sm rounded-4 w-100">
@@ -209,5 +225,4 @@
             </div>
         </div>
     </div>
-</div>
 @endsection
