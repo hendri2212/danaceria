@@ -1,4 +1,14 @@
 @if ($paginator->hasPages())
+    @php
+        $lastPage = $paginator->lastPage();
+        $pages = collect([1, 2, $lastPage - 1, $lastPage])
+            ->filter(fn ($page) => $page >= 1 && $page <= $lastPage)
+            ->unique()
+            ->sort()
+            ->values();
+        $previousPage = null;
+    @endphp
+
     <nav aria-label="Pagination Navigation">
         <ul class="pagination mb-0">
             @if ($paginator->onFirstPage())
@@ -11,26 +21,26 @@
                 </li>
             @endif
 
-            @foreach ($elements as $element)
-                @if (is_string($element))
+            @foreach ($pages as $page)
+                @if (!is_null($previousPage) && $page - $previousPage > 1)
                     <li class="page-item disabled" aria-disabled="true">
-                        <span class="page-link">{{ $element }}</span>
+                        <span class="page-link">...</span>
                     </li>
                 @endif
 
-                @if (is_array($element))
-                    @foreach ($element as $page => $url)
-                        @if ($page == $paginator->currentPage())
-                            <li class="page-item active" aria-current="page">
-                                <span class="page-link">{{ $page }}</span>
-                            </li>
-                        @else
-                            <li class="page-item">
-                                <a class="page-link" href="{{ $url }}">{{ $page }}</a>
-                            </li>
-                        @endif
-                    @endforeach
+                @if ($page == $paginator->currentPage())
+                    <li class="page-item active" aria-current="page">
+                        <span class="page-link">{{ $page }}</span>
+                    </li>
+                @else
+                    <li class="page-item">
+                        <a class="page-link" href="{{ $paginator->url($page) }}">{{ $page }}</a>
+                    </li>
                 @endif
+
+                @php
+                    $previousPage = $page;
+                @endphp
             @endforeach
 
             @if ($paginator->hasMorePages())
