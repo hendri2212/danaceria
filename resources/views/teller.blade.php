@@ -230,7 +230,7 @@
 
                             @if ($transactions->hasPages())
                                 <div class="d-flex justify-content-center justify-content-md-end">
-                                    {{ $transactions->onEachSide(1)->links('vendor.pagination.bootstrap-5-no-summary') }}
+                                    {{ $transactions->onEachSide(0)->links('vendor.pagination.bootstrap-5-no-summary') }}
                                 </div>
                             @endif
                         </div>
