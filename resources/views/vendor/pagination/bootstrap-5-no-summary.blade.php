@@ -1,7 +1,8 @@
 @if ($paginator->hasPages())
     @php
         $lastPage = $paginator->lastPage();
-        $pages = collect([1, 2, $lastPage - 1, $lastPage])
+        $currentPage = $paginator->currentPage();
+        $pages = collect([$currentPage, $currentPage + 1, $lastPage - 1, $lastPage])
             ->filter(fn ($page) => $page >= 1 && $page <= $lastPage)
             ->unique()
             ->sort()
