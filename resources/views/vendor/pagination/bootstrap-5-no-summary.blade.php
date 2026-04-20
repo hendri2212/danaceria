@@ -2,7 +2,17 @@
     @php
         $lastPage = $paginator->lastPage();
         $currentPage = $paginator->currentPage();
-        $pages = collect([$currentPage, $currentPage + 1, $lastPage - 1, $lastPage])
+        if ($lastPage <= 7) {
+            $pages = collect(range(1, $lastPage));
+        } elseif ($currentPage <= 4) {
+            $pages = collect([1, 2, 3, 4, 5, $lastPage]);
+        } elseif ($currentPage >= $lastPage - 3) {
+            $pages = collect([1, $lastPage - 4, $lastPage - 3, $lastPage - 2, $lastPage - 1, $lastPage]);
+        } else {
+            $pages = collect([1, $currentPage - 1, $currentPage, $currentPage + 1, $lastPage]);
+        }
+
+        $pages = $pages
             ->filter(fn ($page) => $page >= 1 && $page <= $lastPage)
             ->unique()
             ->sort()

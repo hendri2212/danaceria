@@ -1,23 +1,23 @@
 @extends('welcome')
 
 @section('content')
-    @if (in_array(auth()->user()?->role, ['admin', 'teller'], true))
-        <div class="mb-3">
-            <div class="d-flex justify-content-between gap-2 align-items-center p-3 rounded-4 bg-light border shadow-sm">
-                <div>
-                    <a href="{{ url('/') }}" class="btn btn-outline-dark btn-sm fw-semibold">Dashboard</a>
+    <div class="mb-3">
+        <div class="d-flex justify-content-between gap-2 align-items-center p-3 rounded-4 bg-light border shadow-sm">
+            <div>
+                <a href="{{ url('/') }}" class="btn btn-outline-dark btn-sm fw-semibold">Dashboard</a>
+                @if (in_array(auth()->user()?->role, ['admin', 'teller'], true))
                     <a href="{{ url('/teller') }}" class="btn btn-outline-primary btn-sm fw-semibold">Teller</a>
                     <a href="{{ url('/customer') }}" class="btn btn-outline-success btn-sm fw-semibold">Customer</a>
-                </div>
-                <form method="POST" action="{{ route('logout') }}" class="m-0">
-                    @csrf
-                    <button type="submit" class="btn btn-danger btn-sm">
-                        Logout
-                    </button>
-                </form>
+                @endif
             </div>
+            <form method="POST" action="{{ route('logout') }}" class="m-0">
+                @csrf
+                <button type="submit" class="btn btn-danger btn-sm">
+                    Logout
+                </button>
+            </form>
         </div>
-    @endif
+    </div>
     <div class="row g-3 g-lg-4">
         {{-- Hero --}}
         <div class="col-12">
@@ -37,7 +37,9 @@
                     </div>
                     <div class="d-flex flex-wrap gap-2 justify-content-md-end">
                         <span class="badge text-bg-primary">🎯 Target Bulanan: Rp 200.000</span>
-                        <span class="badge text-bg-success">🏆 Hari ini: +Rp 25.000</span>
+                        <span class="badge {{ ($todayNet ?? 0) >= 0 ? 'text-bg-success' : 'text-bg-danger' }}">
+                            🏆 Hari ini: {{ ($todayNet ?? 0) >= 0 ? '+' : '-' }}Rp {{ number_format(abs($todayNet ?? 0), 0, ',', '.') }}
+                        </span>
                     </div>
                 </div>
             </div>

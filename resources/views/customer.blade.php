@@ -42,11 +42,11 @@
                                 $balance = $totalIn - $totalOut;
                             @endphp
                             <tr>
-                                <td class="fw-semibold">{{ $customer->name }}</td>
+                                <td class="fw-semibold text-nowrap">{{ $customer->name }}</td>
                                 <td class="text-muted">{{ $customer->email }}</td>
-                                <td class="text-end text-success">Rp {{ number_format($totalIn, 0, ',', '.') }}</td>
-                                <td class="text-end text-danger">Rp {{ number_format($totalOut, 0, ',', '.') }}</td>
-                                <td class="text-end fw-semibold">Rp {{ number_format($balance, 0, ',', '.') }}</td>
+                                <td class="text-end text-success text-nowrap">Rp {{ number_format($totalIn, 0, ',', '.') }}</td>
+                                <td class="text-end text-danger text-nowrap">Rp {{ number_format($totalOut, 0, ',', '.') }}</td>
+                                <td class="text-end fw-semibold text-nowrap">Rp {{ number_format($balance, 0, ',', '.') }}</td>
                             </tr>
                         @empty
                             <tr>

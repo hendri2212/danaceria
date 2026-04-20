@@ -95,14 +95,30 @@ Route::middleware('auth')->group(function () {
             ->paginate(10)
             ->withQueryString();
 
+        $todayStart = now()->startOfDay();
+        $todayEnd = now()->endOfDay();
+
         $summary = Transaction::where('user_id', Auth::id())
             ->selectRaw("SUM(CASE WHEN type = 'in' THEN amount ELSE 0 END) as total_in")
             ->selectRaw("SUM(CASE WHEN type = 'out' THEN amount ELSE 0 END) as total_out")
             ->selectRaw("MAX(COALESCE(transacted_at, created_at)) as last_time")
             ->first();
 
+        $todaySummary = Transaction::where('user_id', Auth::id())
+            ->where(function ($query) use ($todayStart, $todayEnd) {
+                $query->whereBetween('transacted_at', [$todayStart, $todayEnd])
+                    ->orWhere(function ($sub) use ($todayStart, $todayEnd) {
+                        $sub->whereNull('transacted_at')
+                            ->whereBetween('created_at', [$todayStart, $todayEnd]);
+                    });
+            })
+            ->selectRaw("SUM(CASE WHEN type = 'in' THEN amount ELSE 0 END) as total_in")
+            ->selectRaw("SUM(CASE WHEN type = 'out' THEN amount ELSE 0 END) as total_out")
+            ->first();
+
         $totalIn = (int) ($summary->total_in ?? 0);
         $totalOut = (int) ($summary->total_out ?? 0);
+        $todayNet = (int) ($todaySummary->total_in ?? 0) - (int) ($todaySummary->total_out ?? 0);
         $balance = $totalIn - $totalOut;
         $lastUpdated = $summary->last_time ? Carbon::parse($summary->last_time) : null;
 
@@ -146,6 +162,7 @@ Route::middleware('auth')->group(function () {
             'balance' => $balance,
             'totalIn' => $totalIn,
             'totalOut' => $totalOut,
+            'todayNet' => $todayNet,
             'lastUpdated' => $lastUpdated,
             'chart' => [
                 'daily' => $dailyChart,
