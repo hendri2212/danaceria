@@ -92,8 +92,8 @@ Route::middleware('auth')->group(function () {
         $transactions = Transaction::where('user_id', Auth::id())
             ->orderByDesc('transacted_at')
             ->orderByDesc('created_at')
-            ->take(50)
-            ->get();
+            ->paginate(10)
+            ->withQueryString();
 
         $summary = Transaction::where('user_id', Auth::id())
             ->selectRaw("SUM(CASE WHEN type = 'in' THEN amount ELSE 0 END) as total_in")
