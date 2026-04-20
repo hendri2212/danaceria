@@ -165,10 +165,10 @@
                     <div class="d-flex align-items-start justify-content-between mb-3">
                         <div>
                             <h2 class="h5 fw-bold mb-1">Riwayat Transaksi</h2>
-                            <p class="text-secondary mb-0">Maksimal 50 transaksi terbaru.</p>
+                            <p class="text-secondary mb-0">Daftar transaksi terbaru dengan pagination.</p>
                         </div>
                         <span class="badge text-bg-info text-dark">
-                            {{ isset($transactions) ? $transactions->count() : 0 }} catatan
+                            {{ isset($transactions) ? $transactions->total() : 0 }} catatan
                         </span>
                     </div>
 
@@ -221,6 +221,12 @@
                             </div>
                         @endforelse
                     </div>
+
+                    @if (isset($transactions) && method_exists($transactions, 'links') && $transactions->hasPages())
+                        <div class="mt-3 d-flex justify-content-center">
+                            {{ $transactions->onEachSide(1)->links() }}
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>

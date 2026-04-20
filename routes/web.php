@@ -46,8 +46,8 @@ Route::middleware('auth')->group(function () {
             })
             ->orderByDesc('transacted_at')
             ->orderByDesc('created_at')
-            ->take(50)
-            ->get();
+            ->paginate(10)
+            ->withQueryString();
 
         $users = User::orderBy('name')
             ->get(['id', 'name', 'email']);
