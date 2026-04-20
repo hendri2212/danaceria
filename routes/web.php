@@ -49,7 +49,8 @@ Route::middleware('auth')->group(function () {
             ->paginate(10)
             ->withQueryString();
 
-        $users = User::orderBy('name')
+        $users = User::where('role', '!=', 'admin')
+            ->orderBy('name')
             ->get(['id', 'name', 'email']);
 
         $customers = User::where('role', 'customer')

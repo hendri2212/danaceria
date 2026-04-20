@@ -40,7 +40,7 @@
                                     <option value="" disabled selected>Pilih customer</option>
                                     @foreach ($customers ?? [] as $customer)
                                         <option value="{{ $customer->id }}" @selected((string) old('user_id') === (string) $customer->id)>
-                                            {{ $customer->name }} ({{ $customer->email }})
+                                            {{ $customer->name }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -108,7 +108,7 @@
                                     <option value="" disabled selected>Pilih pengirim</option>
                                     @foreach ($customers ?? [] as $customer)
                                         <option value="{{ $customer->id }}" @selected((string) old('from_user_id') === (string) $customer->id)>
-                                            {{ $customer->name }} ({{ $customer->email }})
+                                            {{ $customer->name }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -119,7 +119,7 @@
                                     <option value="" disabled selected>Pilih penerima</option>
                                     @foreach ($customers ?? [] as $customer)
                                         <option value="{{ $customer->id }}" @selected((string) old('to_user_id') === (string) $customer->id)>
-                                            {{ $customer->name }} ({{ $customer->email }})
+                                            {{ $customer->name }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -179,7 +179,7 @@
                                 <option value="">Semua user</option>
                                 @foreach ($users ?? [] as $user)
                                     <option value="{{ $user->id }}" @selected((string) $selectedUserId === (string) $user->id)>
-                                        {{ $user->name }} ({{ $user->email }})
+                                        {{ $user->name }}
                                     </option>
                                 @endforeach
                             </select>
@@ -196,8 +196,6 @@
                                     </p>
                                     <small class="text-muted d-block">
                                         {{ $transaction->user?->name ?? 'User tidak dikenal' }}
-                                        <span class="text-muted">•</span>
-                                        {{ $transaction->user?->email ?? '-' }}
                                     </small>
                                     <small class="text-muted d-block">{{ $transaction->title ?? 'Tanpa judul' }}</small>
                                     @if ($transaction->description)
