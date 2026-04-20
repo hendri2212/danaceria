@@ -222,17 +222,9 @@
                         @endforelse
                     </div>
 
-                    @if (isset($transactions) && method_exists($transactions, 'links'))
-                        <div class="mt-3">
-                            <p class="text-muted small text-center mb-2">
-                                Showing {{ $transactions->firstItem() ?? 0 }} to {{ $transactions->lastItem() ?? 0 }} of {{ $transactions->total() }} results
-                            </p>
-
-                            @if ($transactions->hasPages())
-                                <div class="d-flex justify-content-center">
-                                    {{ $transactions->onEachSide(1)->links() }}
-                                </div>
-                            @endif
+                    @if (isset($transactions) && method_exists($transactions, 'links') && $transactions->hasPages())
+                        <div class="mt-3 d-flex justify-content-center">
+                            {{ $transactions->onEachSide(1)->links() }}
                         </div>
                     @endif
                 </div>
